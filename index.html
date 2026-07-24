@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lend a hand — help signup</title>
+<meta name="description" content="Sign up to help a new family with meals, errands, and a few quiet hours.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<style>
+:root{
+  --ink:#12231d;
+  --moss:#2e5e4e;
+  --moss-dark:#1f4438;
+  --moss-tint:#e6efe9;
+  --wash:#f3f6f1;
+  --paper:#ffffff;
+  --amber:#e0a03c;
+  --muted:#5f7268;
+  --line:#dbe4da;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(18,35,29,.05), 0 12px 32px -20px rgba(18,35,29,.35);
+}
+
+body{
+  font-family:'Karla',system-ui,-apple-system,sans-serif;
+  color:var(--ink);
+  background:var(--wash);
+  background-image:radial-gradient(120% 60% at 50% -10%, #ffffff 0%, rgba(255,255,255,0) 60%);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,.serif{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.01em;}
+
+.eyebrow{
+  font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  font-weight:700;color:var(--muted);
+}
+
+/* ---------- shell ---------- */
+.page{max-width:1040px;margin-inline:auto;padding:2rem 1rem 4rem;}
+@media (min-width:768px){ .page{padding:3.5rem 1.5rem 5rem;} }
+
+.masthead h1{font-size:clamp(1.9rem,5vw,2.9rem);line-height:1.1;margin:.35rem 0 .5rem;}
+.masthead p{color:var(--muted);max-width:46ch;margin:0;font-size:1.02rem;}
+
+.shell{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:calc(var(--radius) + 6px);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  margin-top:2rem;
+}
+
+/* ---------- progress ---------- */
+.tracker{
+  display:flex;gap:.25rem;padding:1.1rem 1.25rem;
+  border-bottom:1px solid var(--line);background:#fbfdfa;
+}
+.tracker-item{flex:1;min-width:0;}
+.tracker-bar{height:4px;border-radius:99px;background:var(--line);overflow:hidden;}
+.tracker-bar span{display:block;height:100%;width:0;background:var(--moss);transition:width .45s ease;}
+.tracker-item.done .tracker-bar span,
+.tracker-item.current .tracker-bar span{width:100%;}
+.tracker-item.current .tracker-bar span{background:var(--amber);}
+.tracker-label{
+  font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+  color:var(--muted);margin-top:.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.tracker-item.current .tracker-label{color:var(--ink);}
+@media (max-width:575px){ .tracker-label{display:none;} .tracker{padding:.9rem 1rem;} }
+
+/* ---------- layout ---------- */
+.body-grid{display:grid;grid-template-columns:1fr;}
+@media (min-width:992px){ .body-grid{grid-template-columns:1.55fr 1fr;} }
+
+.form-side{padding:1.75rem 1.25rem;}
+@media (min-width:768px){ .form-side{padding:2.25rem;} }
+
+.aside{
+  background:var(--moss-tint);
+  border-top:1px solid var(--line);
+  padding:1.75rem 1.25rem;
+}
+@media (min-width:768px){ .aside{padding:2.25rem;} }
+@media (min-width:992px){ .aside{border-top:0;border-left:1px solid var(--line);} }
+
+/* ---------- steps ---------- */
+.step{display:none;}
+.step.active{display:block;animation:rise .35s ease both;}
+@keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+.step h2{font-size:1.5rem;margin-bottom:.3rem;}
+.step-hint{color:var(--muted);margin-bottom:1.5rem;font-size:.95rem;}
+
+.form-label{font-weight:600;font-size:.9rem;margin-bottom:.35rem;}
+.form-control,.form-select{
+  border:1px solid var(--line);border-radius:10px;padding:.7rem .85rem;
+  font-size:1rem;background:#fcfdfb;
+}
+.form-control:focus,.form-select:focus{
+  border-color:var(--moss);box-shadow:0 0 0 3px rgba(46,94,78,.16);background:#fff;
+}
+.form-text{color:var(--muted);}
+
+/* ---------- task cards ---------- */
+.task{position:relative;height:100%;}
+.task input{position:absolute;opacity:0;width:1px;height:1px;}
+.task-face{
+  display:block;height:100%;cursor:pointer;
+  border:1.5px solid var(--line);border-radius:var(--radius);
+  padding:.85rem .95rem;background:#fcfdfb;transition:border-color .18s, background .18s, transform .18s;
+}
+.task-face:hover{border-color:var(--moss);transform:translateY(-1px);}
+.task-name{font-weight:700;font-size:.97rem;display:flex;align-items:center;gap:.5rem;}
+.task-desc{font-size:.83rem;color:var(--muted);margin-top:.2rem;line-height:1.35;}
+.tick{
+  width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line);
+  flex:0 0 auto;display:grid;place-items:center;background:#fff;
+}
+.tick svg{width:11px;height:11px;opacity:0;stroke:#fff;}
+.task input:checked + .task-face{border-color:var(--moss);background:var(--moss-tint);}
+.task input:checked + .task-face .tick{background:var(--moss);border-color:var(--moss);}
+.task input:checked + .task-face .tick svg{opacity:1;}
+.task input:focus-visible + .task-face{outline:3px solid rgba(46,94,78,.35);outline-offset:2px;}
+
+/* ---------- chips ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;}
+.chip{position:relative;}
+.chip input{position:absolute;opacity:0;width:1px;height:1px;}
+.chip span{
+  display:block;cursor:pointer;padding:.45rem .9rem;border-radius:99px;
+  border:1.5px solid var(--line);background:#fcfdfb;font-size:.9rem;font-weight:600;
+}
+.chip input:checked + span{background:var(--moss);border-color:var(--moss);color:#fff;}
+.chip input:focus-visible + span{outline:3px solid rgba(46,94,78,.35);outline-offset:2px;}
+
+/* ---------- buttons ---------- */
+.btn{border-radius:10px;font-weight:700;padding:.75rem 1.15rem;font-size:1rem;}
+.btn-go{background:var(--moss);border:1.5px solid var(--moss);color:#fff;}
+.btn-go:hover,.btn-go:focus{background:var(--moss-dark);border-color:var(--moss-dark);color:#fff;}
+.btn-quiet{background:transparent;border:1.5px solid var(--line);color:var(--ink);}
+.btn-quiet:hover{border-color:var(--muted);color:var(--ink);}
+.nav-row{display:flex;gap:.6rem;margin-top:1.75rem;}
+.nav-row .btn{flex:1;}
+@media (min-width:576px){ .nav-row .btn-go{flex:0 0 auto;min-width:11rem;} .nav-row .btn-quiet{flex:0 0 auto;} .nav-row{justify-content:space-between;} }
+
+/* ---------- the note (signature) ---------- */
+.note{
+  background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--amber);
+  border-radius:10px;padding:1.15rem 1.25rem;box-shadow:var(--shadow);
+}
+.note-body{font-family:'Fraunces',Georgia,serif;font-size:1.08rem;line-height:1.5;font-style:italic;}
+.note-body .fill{font-style:normal;font-weight:600;border-bottom:2px solid var(--amber);padding-bottom:1px;}
+.note-body .blank{
+  font-style:normal;color:var(--muted);border-bottom:2px dotted var(--line);
+  padding:0 1.6rem;
+}
+.note-meta{margin-top:.9rem;padding-top:.75rem;border-top:1px dashed var(--line);font-size:.85rem;color:var(--muted);}
+
+.aside-tip{font-size:.88rem;color:var(--muted);margin-top:1.5rem;line-height:1.5;}
+.aside-tip strong{color:var(--ink);}
+
+/* ---------- review ---------- */
+.review dl{margin:0;}
+.review .row-item{display:flex;gap:1rem;padding:.7rem 0;border-bottom:1px dashed var(--line);}
+.review dt{flex:0 0 7.5rem;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;padding-top:.15rem;}
+.review dd{margin:0;flex:1;font-weight:500;word-break:break-word;}
+
+/* ---------- done ---------- */
+.done{text-align:center;padding:1rem 0 .5rem;}
+.done-mark{
+  width:66px;height:66px;border-radius:50%;background:var(--moss);
+  display:grid;place-items:center;margin:0 auto 1.25rem;
+}
+.done-mark svg{width:30px;height:30px;stroke:#fff;}
+
+.err{color:#9b2c2c;font-size:.86rem;margin-top:.4rem;display:none;}
+.err.show{display:block;}
+.field-bad .form-control{border-color:#c05252;background:#fff8f8;}
+
+.flatpickr-day.selected{background:var(--moss);border-color:var(--moss);}
+.flatpickr-day.selected:hover{background:var(--moss-dark);}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <p class="eyebrow" id="eyebrow">A little help, please</p>
+    <h1 id="headline">Help the Rivera family through the fourth trimester</h1>
+    <p id="subhead">Mateo arrived on March 1. Tell us what you can take off their plate and when you're free — we'll handle the scheduling from there.</p>
+  </header>
+
+  <main class="shell">
+
+    <nav class="tracker" aria-label="Progress">
+      <div class="tracker-item current" data-step="1"><div class="tracker-bar"><span></span></div><div class="tracker-label">Your details</div></div>
+      <div class="tracker-item" data-step="2"><div class="tracker-bar"><span></span></div><div class="tracker-label">What you'll do</div></div>
+      <div class="tracker-item" data-step="3"><div class="tracker-bar"><span></span></div><div class="tracker-label">When</div></div>
+      <div class="tracker-item" data-step="4"><div class="tracker-bar"><span></span></div><div class="tracker-label">Send</div></div>
+    </nav>
+
+    <div class="body-grid">
+
+      <!-- ============ FORM ============ -->
+      <section class="form-side">
+
+        <!-- STEP 1 -->
+        <div class="step active" id="step1">
+          <h2>Who's helping?</h2>
+          <p class="step-hint">So the family knows who to expect at the door.</p>
+
+          <div class="row g-3">
+            <div class="col-12" id="wrap-name">
+              <label class="form-label" for="fullName">Your name</label>
+              <input type="text" class="form-control" id="fullName" autocomplete="name" placeholder="Jordan Ellis">
+              <p class="err" id="err-name">Add your name so we know who's coming.</p>
+            </div>
+
+            <div class="col-md-6" id="wrap-email">
+              <label class="form-label" for="email">Email</label>
+              <input type="email" class="form-control" id="email" autocomplete="email" placeholder="jordan@email.com">
+              <p class="err" id="err-email">Check the email address — we'll send confirmations here.</p>
+            </div>
+
+            <div class="col-md-6" id="wrap-phone">
+              <label class="form-label" for="phone">Phone <span class="fw-normal text-muted">(optional)</span></label>
+              <input type="tel" class="form-control" id="phone" autocomplete="tel" placeholder="(919) 555-0142">
+              <p class="err" id="err-phone">Use at least 10 digits, or leave it blank.</p>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label" for="relationship">How do you know them?</label>
+              <select class="form-select" id="relationship">
+                <option value="">Choose one</option>
+                <option>Family</option>
+                <option>Friend</option>
+                <option>Neighbor</option>
+                <option>Coworker</option>
+                <option>Church or community group</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label" for="contactPref">Best way to reach you</label>
+              <select class="form-select" id="contactPref">
+                <option>Text message</option>
+                <option>Email</option>
+                <option>Phone call</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <span></span>
+            <button type="button" class="btn btn-go" data-go="2">Next: what you'll do</button>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step" id="step2">
+          <h2>What can you take on?</h2>
+          <p class="step-hint">Pick as many as you like. Nothing here is a small thing.</p>
+
+          <fieldset>
+            <legend class="visually-hidden">Ways to help</legend>
+            <div class="row g-2 g-md-3" id="taskGrid"></div>
+          </fieldset>
+          <p class="err" id="err-tasks">Choose at least one way to help — or pick “Surprise us.”</p>
+
+          <div class="mt-3 d-none" id="otherWrap">
+            <label class="form-label" for="otherTask">What did you have in mind?</label>
+            <input type="text" class="form-control" id="otherTask" placeholder="Mowing the lawn, a coffee run, folding laundry…">
+          </div>
+
+          <div class="nav-row">
+            <button type="button" class="btn btn-quiet" data-go="1">Back</button>
+            <button type="button" class="btn btn-go" data-go="3">Next: pick your days</button>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step" id="step3">
+          <h2>When are you free?</h2>
+          <p class="step-hint">Tap every day that works. You can change your mind later.</p>
+
+          <div class="mb-3">
+            <label class="form-label" for="calendar">Available dates</label>
+            <input type="text" class="form-control" id="calendar" placeholder="Tap to open the calendar" readonly>
+            <div class="form-text">Tap a date to add it, tap again to remove it.</div>
+            <p class="err" id="err-dates">Pick at least one date, or check “I'm flexible.”</p>
+          </div>
+
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="flexible">
+            <label class="form-check-label" for="flexible">I'm flexible — just tell me when you need me</label>
+          </div>
+
+          <div class="mb-4">
+            <span class="form-label d-block">Time of day that suits you</span>
+            <div class="chips" id="timeChips"></div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="frequency">How often?</label>
+            <select class="form-select" id="frequency">
+              <option>Just once</option>
+              <option>Once a week</option>
+              <option>A few times a week</option>
+              <option>Whenever there's a gap</option>
+            </select>
+          </div>
+
+          <div class="nav-row">
+            <button type="button" class="btn btn-quiet" data-go="2">Back</button>
+            <button type="button" class="btn btn-go" data-go="4">Next: review</button>
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="step" id="step4">
+          <h2>One last look</h2>
+          <p class="step-hint">Check the details, add anything we should know, then send it over.</p>
+
+          <div class="review mb-4" id="reviewList"></div>
+
+          <div class="mb-3">
+            <label class="form-label" for="notes">Anything else? <span class="fw-normal text-muted">(optional)</span></label>
+            <textarea class="form-control" id="notes" rows="4" placeholder="Allergies to work around, a dish you make well, days that are tight, a dog you're nervous about…"></textarea>
+          </div>
+
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="quietDrop" checked>
+            <label class="form-check-label" for="quietDrop">Leave it at the door — no need to answer if they're resting</label>
+          </div>
+
+          <!-- spam trap -->
+          <div class="visually-hidden" aria-hidden="true">
+            <label for="website">Leave this empty</label>
+            <input type="text" id="website" tabindex="-1" autocomplete="off">
+          </div>
+
+          <p class="err" id="err-submit">That didn't send. Check your connection and try again.</p>
+
+          <div class="nav-row">
+            <button type="button" class="btn btn-quiet" data-go="3">Back</button>
+            <button type="button" class="btn btn-go" id="submitBtn">Send my signup</button>
+          </div>
+        </div>
+
+        <!-- DONE -->
+        <div class="step" id="stepDone">
+          <div class="done">
+            <div class="done-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <h2>You're on the list</h2>
+            <p class="step-hint mb-4" id="doneMsg">We'll be in touch to confirm the details.</p>
+            <button type="button" class="btn btn-quiet" id="againBtn">Sign up someone else</button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============ ASIDE ============ -->
+      <aside class="aside">
+        <p class="eyebrow mb-3">Your note, so far</p>
+
+        <div class="note">
+          <p class="note-body mb-0" id="noteBody"></p>
+          <div class="note-meta" id="noteMeta">Nothing is sent until you press send.</div>
+        </div>
+
+        <p class="aside-tip">
+          <strong>Not sure what's useful?</strong> Meals that freeze well, a load of laundry, and an hour of holding the baby are the three things new parents ask for most.
+        </p>
+      </aside>
+
+    </div>
+  </main>
+
+  <p class="text-center mt-4 mb-0" style="color:var(--muted);font-size:.85rem;">
+    Questions? Reply to whoever sent you this link.
+  </p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+/* =========================================================
+   CONFIG — edit these three blocks and nothing else.
+   ========================================================= */
+const CONFIG = {
+  // Paste the Web app URL from your Apps Script deployment here.
+  scriptUrl: "https://script.google.com/macros/s/AKfycbzan2CEoIg_kt1woeOaQyY_62c5lV_lJg6gy9tGmr8Rppx7WYFuoS5ZKwABc3Wm7p2daA/exec",
+
+  familyName: "the Rivera family",
+  eyebrow:  "A little help, please",
+  headline: "Help the Rivera family through the fourth trimester",
+  subhead:  "Mateo arrived on March 1. Tell us what you can take off their plate and when you're free — we'll handle the scheduling from there.",
+  doneMsg:  "We'll text you a day or two before to confirm. Thank you — this genuinely helps.",
+
+  // Optional: block dates before today, and cap how far out people can sign up.
+  minDate: "today",
+  maxDate: null // e.g. "2026-12-31"
+};
+
+const TASKS = [
+  { id:"meals",     name:"Meals & cooking",   desc:"Drop off dinner or stock the freezer" },
+  { id:"cleaning",  name:"Cleaning",          desc:"Dishes, laundry, a quick tidy" },
+  { id:"errands",   name:"Errands & groceries", desc:"Pharmacy runs, a shopping list" },
+  { id:"baby",      name:"Baby care",         desc:"Hold the baby so mom can shower or sleep" },
+  { id:"rides",     name:"Rides",             desc:"Appointments, school runs" },
+  { id:"siblings",  name:"Older siblings",    desc:"A park trip, a playdate, homework" },
+  { id:"pets",      name:"Pet care",          desc:"Walks, feeding, the vet" },
+  { id:"company",   name:"Company & listening", desc:"Sit and talk, no agenda" },
+  { id:"other",     name:"Something else",    desc:"Tell us what you had in mind" },
+  { id:"surprise",  name:"Surprise us",       desc:"We'll match you to what's needed" }
+];
+
+const TIMES = ["Morning","Afternoon","Evening","Overnight"];
+
+/* ========================= build UI ========================= */
+const $  = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+$("#eyebrow").textContent  = CONFIG.eyebrow;
+$("#headline").textContent = CONFIG.headline;
+$("#subhead").textContent  = CONFIG.subhead;
+$("#doneMsg").textContent  = CONFIG.doneMsg;
+document.title = "Lend a hand — " + CONFIG.familyName;
+
+$("#taskGrid").innerHTML = TASKS.map(t => `
+  <div class="col-6 col-lg-4">
+    <div class="task">
+      <input type="checkbox" id="task-${t.id}" value="${t.name}" data-task="${t.id}">
+      <label class="task-face" for="task-${t.id}">
+        <span class="task-name">
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          ${t.name}
+        </span>
+        <span class="task-desc">${t.desc}</span>
+      </label>
+    </div>
+  </div>`).join("");
+
+$("#timeChips").innerHTML = TIMES.map((t,i) => `
+  <label class="chip">
+    <input type="checkbox" value="${t}" id="time-${i}">
+    <span>${t}</span>
+  </label>`).join("");
+
+/* ========================= calendar ========================= */
+const picker = flatpickr("#calendar", {
+  mode: "multiple",
+  dateFormat: "Y-m-d",
+  altInput: true,
+  altFormat: "D, M j",
+  minDate: CONFIG.minDate,
+  maxDate: CONFIG.maxDate,
+  onChange: paintNote
+});
+
+/* ========================= step engine ========================= */
+let step = 1;
+const LAST = 4;
+
+function show(n){
+  $$(".step").forEach(s => s.classList.remove("active"));
+  $("#step" + n).classList.add("active");
+  step = n;
+  $$(".tracker-item").forEach(item => {
+    const i = +item.dataset.step;
+    item.classList.toggle("done", i < n);
+    item.classList.toggle("current", i === n);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (n === LAST) paintReview();
+}
+
+$$("[data-go]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const target = +btn.dataset.go;
+    if (target > step && !validate(step)) return;
+    show(target);
+  });
+});
+
+/* ========================= validation ========================= */
+function fail(wrapId, errId, on){
+  const w = $("#" + wrapId), e = $("#" + errId);
+  if (w) w.classList.toggle("field-bad", on);
+  if (e) e.classList.toggle("show", on);
+}
+
+function validate(n){
+  let ok = true;
+
+  if (n === 1){
+    const name  = $("#fullName").value.trim();
+    const email = $("#email").value.trim();
+    const phone = $("#phone").value.trim();
+    const digits = phone.replace(/\D/g,"");
+
+    const badName  = name.length < 2;
+    const badEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+    const badPhone = phone !== "" && digits.length < 10;
+
+    fail("wrap-name","err-name",badName);
+    fail("wrap-email","err-email",badEmail);
+    fail("wrap-phone","err-phone",badPhone);
+    ok = !(badName || badEmail || badPhone);
+    if (badName) $("#fullName").focus();
+    else if (badEmail) $("#email").focus();
+  }
+
+  if (n === 2){
+    const none = selectedTasks().length === 0;
+    $("#err-tasks").classList.toggle("show", none);
+    ok = !none;
+  }
+
+  if (n === 3){
+    const none = picker.selectedDates.length === 0 && !$("#flexible").checked;
+    $("#err-dates").classList.toggle("show", none);
+    ok = !none;
+  }
+
+  return ok;
+}
+
+/* clear errors as people fix things */
+["fullName","email","phone"].forEach(id =>
+  $("#" + id).addEventListener("input", () => {
+    $("#wrap-" + (id === "fullName" ? "name" : id)).classList.remove("field-bad");
+    $("#err-" + (id === "fullName" ? "name" : id)).classList.remove("show");
+  })
+);
+
+/* ========================= live note ========================= */
+function selectedTasks(){
+  return $$("#taskGrid input:checked").map(i => i.value);
+}
+function selectedTimes(){
+  return $$("#timeChips input:checked").map(i => i.value);
+}
+function prettyDates(){
+  return picker.selectedDates.map(d =>
+    d.toLocaleDateString(undefined,{ weekday:"short", month:"short", day:"numeric" })
+  );
+}
+function listPhrase(arr){
+  if (arr.length === 0) return "";
+  if (arr.length === 1) return arr[0];
+  if (arr.length === 2) return arr[0] + " and " + arr[1];
+  return arr.slice(0,-1).join(", ") + ", and " + arr[arr.length-1];
+}
+
+function paintNote(){
+  const name  = $("#fullName").value.trim();
+  const tasks = selectedTasks();
+  const dates = prettyDates();
+  const flex  = $("#flexible").checked;
+
+  const who  = name ? `<span class="fill">${escapeHtml(name)}</span>` : `<span class="blank"></span>`;
+  const what = tasks.length
+    ? `<span class="fill">${escapeHtml(listPhrase(tasks).toLowerCase())}</span>`
+    : `<span class="blank"></span>`;
+  const when = flex
+    ? `<span class="fill">whenever it helps</span>`
+    : (dates.length
+        ? `<span class="fill">${escapeHtml(dates.slice(0,3).join(", "))}${dates.length>3 ? " +" + (dates.length-3) + " more" : ""}</span>`
+        : `<span class="blank"></span>`);
+
+  $("#noteBody").innerHTML = `${who} is helping with ${what} on ${when}.`;
+
+  const times = selectedTimes();
+  const bits = [];
+  if (times.length) bits.push(listPhrase(times).toLowerCase());
+  if ($("#frequency").value) bits.push($("#frequency").value.toLowerCase());
+  $("#noteMeta").textContent = bits.length
+    ? "Prefers " + bits.join(" · ")
+    : "Nothing is sent until you press send.";
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+}
+
+$("#fullName").addEventListener("input", paintNote);
+$("#frequency").addEventListener("change", paintNote);
+$("#flexible").addEventListener("change", () => {
+  if ($("#flexible").checked) $("#err-dates").classList.remove("show");
+  paintNote();
+});
+document.addEventListener("change", (e) => {
+  if (e.target.closest("#taskGrid") || e.target.closest("#timeChips")) {
+    if (e.target.dataset.task === "other") $("#otherWrap").classList.toggle("d-none", !e.target.checked);
+    if (selectedTasks().length) $("#err-tasks").classList.remove("show");
+    paintNote();
+  }
+});
+paintNote();
+
+/* ========================= review ========================= */
+function payload(){
+  const tasks = selectedTasks();
+  const other = $("#otherTask").value.trim();
+  return {
+    submittedAt : new Date().toISOString(),
+    name        : $("#fullName").value.trim(),
+    email       : $("#email").value.trim(),
+    phone       : $("#phone").value.trim(),
+    relationship: $("#relationship").value,
+    contactPref : $("#contactPref").value,
+    tasks       : tasks.join(", "),
+    otherTask   : tasks.includes("Something else") ? other : "",
+    flexible    : $("#flexible").checked ? "Yes" : "No",
+    dates       : picker.selectedDates.map(d => picker.formatDate(d,"Y-m-d")).join(", "),
+    times       : selectedTimes().join(", "),
+    frequency   : $("#frequency").value,
+    notes       : $("#notes").value.trim(),
+    doorDrop    : $("#quietDrop").checked ? "Yes" : "No",
+    website     : $("#website").value
+  };
+}
+
+function paintReview(){
+  const p = payload();
+  const rows = [
+    ["Name", p.name],
+    ["Contact", [p.email, p.phone].filter(Boolean).join(" · ") + (p.contactPref ? ` (prefers ${p.contactPref.toLowerCase()})` : "")],
+    ["Helping with", p.tasks + (p.otherTask ? " — " + p.otherTask : "")],
+    ["Dates", p.flexible === "Yes" ? "Flexible" : listPhrase(prettyDates())],
+    ["Time of day", p.times || "Any"],
+    ["How often", p.frequency]
+  ];
+  $("#reviewList").innerHTML = rows.map(([k,v]) => `
+    <div class="row-item"><dt>${k}</dt><dd>${escapeHtml(v || "—")}</dd></div>`).join("");
+}
+
+/* ========================= submit ========================= */
+$("#submitBtn").addEventListener("click", async () => {
+  const btn = $("#submitBtn");
+  const data = payload();
+
+  if (data.website) return;                 // bot filled the honeypot
+  if (!validate(1) ) { show(1); return; }
+  if (!validate(2) ) { show(2); return; }
+  if (!validate(3) ) { show(3); return; }
+
+  $("#err-submit").classList.remove("show");
+  btn.disabled = true;
+  btn.textContent = "Sending…";
+
+  try {
+    if (!CONFIG.scriptUrl || CONFIG.scriptUrl.startsWith("PASTE_")) {
+      console.warn("No Apps Script URL set. Payload:", data);
+      await new Promise(r => setTimeout(r, 600));
+    } else {
+      const res = await fetch(CONFIG.scriptUrl, {
+        method: "POST",
+        // text/plain keeps this a "simple" request, so the browser skips
+        // the CORS preflight that Apps Script can't answer.
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(data)
+      });
+      const out = await res.json();
+      if (!out.ok) throw new Error(out.error || "Sheet rejected the row");
+    }
+    show("Done");
+    $$(".tracker-item").forEach(i => { i.classList.add("done"); i.classList.remove("current"); });
+  } catch (err) {
+    console.error(err);
+    $("#err-submit").classList.add("show");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Send my signup";
+  }
+});
+
+$("#againBtn").addEventListener("click", () => {
+  $$("input[type=checkbox]").forEach(c => c.checked = false);
+  $("#quietDrop").checked = true;
+  ["fullName","email","phone","otherTask","notes"].forEach(id => $("#" + id).value = "");
+  $("#relationship").selectedIndex = 0;
+  $("#contactPref").selectedIndex = 0;
+  $("#frequency").selectedIndex = 0;
+  $("#otherWrap").classList.add("d-none");
+  picker.clear();
+  paintNote();
+  show(1);
+});
+</script>
+</body>
+</html>
